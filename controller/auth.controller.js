@@ -160,7 +160,7 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   console.log("aaaaaaaaa");
   const updatedUser = await DB.findOneAndUpdate(
       { _id: decodedToken.id },
-      { Password : hashedPassword  },
+      { Password : hashedPassword , confirmPassword : confirmPassword },
       { new: true }
   );
   res.json("Update Success");
