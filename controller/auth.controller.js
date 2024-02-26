@@ -85,7 +85,7 @@ const signup = asyncHandler(async (req, res, next) => {
 
   if (await newUser.save()) {
     // Send confirmation email
-    const link =  `http://localhost:4000/api/users/verify/${token}`
+    const link =  `https://barclete88.onrender.com/api/users/verify/${token}`
     const result = await sendEmailTo(newUser, link);
 
     if (result.success) {
@@ -132,9 +132,9 @@ const findUser = await DB.findOne({ Email });
 if (!findUser) {
   return next(new ApiError("Sorry Your Email is wrong", 404));
 }
-const token = jwt.sign({ email: findUser.Email, id: findUser._id }, process.env.JWT_SECRET_KEY);
+const token = jwt.sign({ email: findUser.Email, id: findUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '10m' });
 
-const link =  `http://localhost:4000/api/users/forget/${token}`
+const link =  `https://barclete88.onrender.com/api/users/forget/${token}`
 const result = await sendEmailTo(findUser, link);
 
 if (result.success) {
