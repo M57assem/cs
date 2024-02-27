@@ -40,7 +40,7 @@ const GetUsers =  asyHchandler(async(req,res,next)=>{
       return next(new ApiError("Wrong email or password 111111111!",404));
     }
 
-   
+       if(findUser.verified){
 
     const passwordMatch = await bcrypt.compare(Password, findUser.Password);
     
@@ -50,8 +50,14 @@ const GetUsers =  asyHchandler(async(req,res,next)=>{
     }else{
       return next(new ApiError("Wrong email or password 2222222!",404));
     }
- 
+  }else{
+    return next(new ApiError("please verify your email !!",404));
+  }
   });
+
+
+   
+
 
   
 
