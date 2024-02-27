@@ -10,8 +10,8 @@ async function sendEmailTo(user,link) {
       service: "gmail",
       auth: {
         // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-        user: 'smartbarclte.cs88@gmail.com',
-        pass:  'zmcs kjyy ttua njyo',
+       user: process.env.username,
+        pass: proxess.env.password ,
       },
     })
     // send mail with defined transport object
