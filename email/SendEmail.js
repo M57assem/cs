@@ -10,7 +10,7 @@ async function sendEmailTo(user,link) {
       service: "gmail",
       auth: {
         // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-       user: process.env.username,
+       user: 'smartbracelet88@gmail.com',
         pass: process.env.pass ,
       },
     })
