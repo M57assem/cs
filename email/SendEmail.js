@@ -11,7 +11,7 @@ async function sendEmailTo(user,link) {
       auth: {
         // TODO: replace `user` and `pass` values from <https://forwardemail.net>
        user: 'smartbracelet88@gmail.com',
-        pass: process.env.pass ,
+        pass: 'rhot bbno yrja xglh' ,
       },
     })
     // send mail with defined transport object
