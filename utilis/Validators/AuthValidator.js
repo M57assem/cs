@@ -4,7 +4,7 @@ exports.SignupValidator = [
     check('Name')
     .notEmpty().withMessage('Name is required')
     .isLength({min:3}).withMessage('Name is too short')
-    .isLength({max:10}).withMessage('Name is too long '),
+    .isLength({max:20}).withMessage('Name is too long '),
 
 
 
