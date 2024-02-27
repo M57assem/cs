@@ -11,7 +11,7 @@ async function sendEmailTo(user,link) {
       auth: {
         // TODO: replace `user` and `pass` values from <https://forwardemail.net>
        user: process.env.username,
-        pass: proxess.env.password ,
+        pass: proxess.env.pass ,
       },
     })
     // send mail with defined transport object
