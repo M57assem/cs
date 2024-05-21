@@ -89,7 +89,7 @@ const signup = asyncHandler(async (req, res, next) => {
 
   if (await newUser.save()) {
     // Send confirmation email
-    const link =   `http://localhost:6542/api/users/verify/${token}`
+   const link =   `https://barclete88.onrender.com/api/users/verify/${token}`
     const result = await sendEmailTo(newUser, link);
 
     if (result.success) {
