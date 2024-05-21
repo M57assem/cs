@@ -1,4 +1,6 @@
 const express = require('express');
+
+
 const bcrypt = require('bcryptjs');
 const DB = require('../data/database');
 const asyHchandler =require('express-async-handler')
@@ -19,6 +21,8 @@ const GetUsers =  asyHchandler(async(req,res,next)=>{
     if(users.length ===0 ){
       return next(new ApiError("Null !!!",500));
     }  
+    
+    
     res.json(users);
      
 });
@@ -40,7 +44,7 @@ const GetUsers =  asyHchandler(async(req,res,next)=>{
       return next(new ApiError("Wrong email or password 111111111!",404));
     }
 
-       if(findUser.verified){
+    if(findUser.verified){
 
     const passwordMatch = await bcrypt.compare(Password, findUser.Password);
     
@@ -55,10 +59,6 @@ const GetUsers =  asyHchandler(async(req,res,next)=>{
   }
   });
 
-
-   
-
-
   
 
 
@@ -72,7 +72,7 @@ const GetUsers =  asyHchandler(async(req,res,next)=>{
 
   
 const signup = asyncHandler(async (req, res, next) => {
-  const { Name, Email, Password, confirmPassword, Wight, Lenght } = req.body;
+  const { Name, Email, Password, confirmPassword, Wight, Lenght , role } = req.body;
 
   const findUser = await DB.findOne({ Email });
 
@@ -89,7 +89,7 @@ const signup = asyncHandler(async (req, res, next) => {
 
   if (await newUser.save()) {
     // Send confirmation email
-    const link =  `https://barclete88.onrender.com/api/users/verify/${token}`
+    const link =   `http://localhost:6542/api/users/verify/${token}`
     const result = await sendEmailTo(newUser, link);
 
     if (result.success) {
@@ -104,25 +104,29 @@ const signup = asyncHandler(async (req, res, next) => {
   }
 });
 
+const path = require('path')
 const VerifyEmail = async (req, res, next) => {
   try {
     // Verify the token
     const decodedToken = jwt.verify(req.params.token, process.env.JWT_SECRET_KEY);
-    
     // Retrieve user from the database
     const user = await DB.findOne({ _id: decodedToken.id });
-
     if (!user) {
       // If user is not found, throw a 404 error
       throw new ApiError("Something wrong", 404);
     }
-
     // Update the user record in the database to mark it as verified
+    
     user.verified = true;
     await user.save();
-
     // Send a success response
-    res.status(200).json({ status: 'success', message: 'User verified successfully' });
+   
+    res.sendFile(path.join(__dirname, '../index.html'));
+
+
+    // console.log("aaaaaaaa");
+
+    
   } catch (error) {
     // Pass the error to the error handling middleware
     next(error);
@@ -161,7 +165,7 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   }
 
   const hashedPassword = await bcrypt.hash(Password, 10);
-  console.log("aaaaaaaaa");
+  console.log("Apply Hashpassword");
   const updatedUser = await DB.findOneAndUpdate(
       { _id: decodedToken.id },
       { Password : hashedPassword , confirmPassword : confirmPassword },
@@ -171,34 +175,40 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 });
 
 const update = asyncHandler(async (req, res) => {
-  // verify JWT token
-  const decodedToken = jwt.verify(req.params.token, process.env.JWT_SECRET_KEY);
+  
+    // Verify JWT token
+    const decodedToken = jwt.verify(req.params.token, process.env.JWT_SECRET_KEY);
 
-  // find user by ID
-  const user = await DB.findOne({ _id: decodedToken.id });
+    // Find user by ID
+    const user = await DB.findOne({ _id: decodedToken.id });
 
-  // check if user is logged in
-  if (!user) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
+    // Check if user exists
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
 
-  // get update parameters from request
-  const x = req.params.x;
+    // Update user
+    
+    const updatedUser = await DB.findOneAndUpdate(
+      { _id: decodedToken.id },
+      req.body, // Assuming req.body contains the updated user information
+      { new: true } // Return the updated user document
+    );
 
-  // update user information in the database
-  const updatedUser = await DB.findOneAndUpdate({ _id: user._id }, req.body, { new: true });
-
-  // check if update was successful
-  if (!updatedUser) {
-    return res.status(400).json({ message: 'Update failed' });
-  }
-
-  // return success message
-  res.json({ message: 'Update successful' });
+    if(updatedUser){
+    // Send response
+    res.json({ message: 'Update Success', user: updatedUser });
+    }else{
+    // Handle errors
+  
+    return new ApiError("Update failed", 404);
+    }
 });
 
 
-module.exports ={
+
+  // get update parameters from request
+  module.exports ={
     GetUsers,
     signup,
     login,
