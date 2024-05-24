@@ -79,6 +79,6 @@ exports.SignupValidator = [
         check('Password')
         .notEmpty().withMessage('Password is required')
         .isLength({min:6}).withMessage('Password is too short')
-        .isLength({max:12}).withMessage('Password is too long '),
+        .isLength({max:20}).withMessage('Password is too long '),
         ErrorValidation
     ]
