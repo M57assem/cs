@@ -119,20 +119,14 @@ const VerifyEmail = async (req, res, next) => {
     
     user.verified = true;
     await user.save();
-    // Send a success response
-   
-    res.sendFile(path.join(__dirname, '../index.html'));
-
-
-    // console.log("aaaaaaaa");
-
-    
+ 
+    // Redirect the user to the index.html page in the public directory
+    res.redirect('/index.html');
   } catch (error) {
     // Pass the error to the error handling middleware
     next(error);
   }
 };
-
 const ForgetPassword = asyncHandler(async (req, res, next) => {
 const {Email} = req.body;
 const findUser = await DB.findOne({ Email });
@@ -142,7 +136,7 @@ if (!findUser) {
 }
 const token = jwt.sign({ email: findUser.Email, id: findUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '10m' });
 
-const link =  `https://barclete88.onrender.com/api/users/forget/${token}`
+const link =   `https://barclete88.onrender.com/api/users/PasswordForm/${token}`
 const result = await sendEmailTo(findUser, link);
 
 if (result.success) {
@@ -150,6 +144,20 @@ if (result.success) {
 
 }
 })
+const PasswordForm = asyncHandler(async (req, res, next) => {
+  try {
+    const decodedToken = jwt.verify(req.params.token, process.env.JWT_SECRET_KEY);
+    const user = await DB.findOne({ _id: decodedToken.id });
+
+    if (!user) {
+      return next(new ApiError("User not found", 404));
+    }
+
+    res.sendFile(path.join(__dirname, '../forget.html'));
+  } catch (error) {
+    next(error);
+  }
+});
 
 const resetPassword = asyncHandler(async (req, res, next) => {
   const { Password  , confirmPassword} = req.body;
@@ -197,7 +205,7 @@ const update = asyncHandler(async (req, res) => {
 
     if(updatedUser){
     // Send response
-    res.json({ message: 'Update Success', user: updatedUser });
+     res.json("Update Success");
     }else{
     // Handle errors
   
@@ -214,6 +222,7 @@ const update = asyncHandler(async (req, res) => {
     login,
     VerifyEmail,
     ForgetPassword,
+    PasswordForm,
     resetPassword,
     update
     
