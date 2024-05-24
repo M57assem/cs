@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reset Password</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #eaf4fd;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #333;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h2 {
+      font-weight: bold;
+      font-size: 2em;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .password-input {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    input[type="password"] {
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1em;
+      width: 100%;
+      transition: border-color 0.3s ease;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 10px;
+      top: calc(50% - 8px);
+      cursor: pointer;
+      font-size: 1.5em;
+      color: #999;
+      background-color: transparent;
+      border: none;
+      outline: none;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      transition: color 0.3s ease;
+    }
+
+    .password-toggle i {
+      font-size: 1.2em;
+    }
+
+    button:hover .password-toggle i {
+      color: #333;
+    }
+
+    button:hover .password-toggle i {
+      transform: rotate(90deg);
+    }
+
+    button:hover .password-toggle i:before {
+      background-color: #333;
+    }
+
+    button:hover .password-toggle i:before {
+      background-color: #fff;
+    }
+
+    button[type="submit"] {
+      padding: 12px 20px;
+      background-color: #0056b3;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #004080;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Reset Password</h2>
+    <form id="resetPasswordForm">
+      <label for="newPassword">New Password:</label>
+      <div class="password-input">
+        <input type="password" id="newPassword" name="newPassword" required>
+        <button class="password-toggle" type="button" onclick="togglePasswordVisibility('newPassword')">
+          <i class="fas fa-lock" id="newPasswordLock"></i>
+        </button>
+      </div>
+      
+      <label for="confirmPassword">Confirm Password:</label>
+      <div class="password-input">
+        <input type="password" id="confirmPassword" name="confirmPassword" required>
+        <button class="password-toggle" type="button" onclick="togglePasswordVisibility('confirmPassword')">
+          <i class="fas fa-lock" id="confirmPasswordLock"></i>
+        </button>
+      </div>
+      
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+  <script>
+    document.getElementById('resetPasswordForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (newPassword !== confirmPassword) {
+        alert('Passwords do not match. Please try again.');
+        return;
+      }
+
+      const token = window.location.pathname.split('/').pop();
+
+      fetch(`http://localhost:8521/api/users/forget/${token}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ Password: newPassword, confirmPassword: confirmPassword })
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Failed to reset password');
+        }
+      })
+      .then(data => {
+        alert('Password reset successful!');
+        // Optionally redirect the user to a login page or another page
+      })
+      .catch(error => {
+        alert('An error occurred: ' + error.message);
+      });
+    });
+
+    function togglePasswordVisibility(inputId) {
+      var input = document.getElementById(inputId);
+      var toggleButton = document.querySelector(`button[onclick="togglePasswordVisibility('${inputId}')"]`);
+      var lockIcon = document.getElementById(inputId + 'Lock');
+
+      if (input.type === "password") {
+        input.type = "text";
+        toggleButton.style.color = "#333";
+        lockIcon.classList.remove("fa-lock");
+        lockIcon.classList.add("fa-unlock");
+      } else {
+        input.type ="password";
+        toggleButton.style.color = "#999";
+        lockIcon.classList.remove("fa-unlock");
+        lockIcon.classList.add("fa-lock");
+      }
+    }
+  </script>
+</body>
+</html>
