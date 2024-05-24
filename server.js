@@ -8,6 +8,7 @@ const dotenv = require('dotenv');
 const morgan = require('morgan');
 const cors = require('cors');
 
+
 // Load environment variables
 dotenv.config({ path: 'config.env' });
 
@@ -18,13 +19,14 @@ dbConnection();
 app.use(cors());
 app.use(express.json());
 
-// Static file serving
-app.use('/public', express.static('public'));
 
-// Logging
+// Logging  // GET /api/users 200 239.216 ms - 12834 show me details 
+
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 const authRouter = require('./routes/auth.route');
@@ -39,9 +41,9 @@ app.all('*', (req, res, next) => {
 app.use(globalError);
 
 // Start server
-const port = 6542;
+const port = process.env.PORT 
 const server = app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Hello`);
 });
 
 // Handle rejection outside express
