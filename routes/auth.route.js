@@ -24,6 +24,9 @@ router.route('/verify/:token')
 router.route('/forget')
 .post(as.ForgetPassword)
 
+router.route('/PasswordForm/:token')
+.get(as.PasswordForm)
+
 router.route('/forget/:token')
 .post(resetPassword,as.resetPassword)
 
