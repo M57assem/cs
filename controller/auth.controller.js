@@ -138,7 +138,7 @@ if (!findUser) {
 const token = jwt.sign({ email: findUser.Email, id: findUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '10m' });
 
 const link =   `https://barclete88.onrender.com/api/users/PasswordForm/${token}`
-
+const result = await resetEmail(findUser, link);
 
 if (result.success) {
   res.status(201).send("Link Send");
