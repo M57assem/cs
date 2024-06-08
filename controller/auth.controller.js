@@ -133,9 +133,9 @@ const signup = asyncHandler(async (req, res, next) => {
 
   const hashedPassword = await bcrypt.hash(Password, 10);
 
-  const newUser = new DB({ Name, Email, Password: hashedPassword, confirmPassword, Wight, Lenght });
+  const newUser = new DB({ Name, Email, Password: hashedPassword, confirmPassword, Wight, Lenght,role: role || 'user' });
 
-  const token = new DB({ Name, Email, Password: hashedPassword, confirmPassword, Wight, Lenght,role: role || 'user' });
+  const token = jwt.sign({ email: newUser.Email, id: newUser._id }, process.env.JWT_SECRET_KEY,);
   newUser.token = token;
 
   if (await newUser.save()) {
