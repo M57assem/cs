@@ -11,58 +11,6 @@ const {sendEmailTo} = require('../email/SendEmail');
 const {resetEmail} = require('../email/sendmail');
 
 
-
-
-
-const GetUsers =  asyHchandler(async(req,res,next)=>{
-
- 
-
-    const users = await DB.find({},{"__v":false,"confirmPassword":false, "_id":false});
-    if(users.length ===0 ){
-      return next(new ApiError("Null !!!",500));
-    }  
-    
-    
-    res.json(users);
-     
-});
-
-
-
-
- 
-  const login = asyHchandler( async (req, res , next) => {
- 
-    const { Email , Password } = req.body;
-
-    if(!Email && !Password){
-      return next(new ApiError("Wrong email and passwordare required!",404));
-    }
-    const findUser = await DB.findOne({ Email });
-
-    if (!findUser) {
-      return next(new ApiError("Wrong email or password 111111111!",404));
-    }
-
-    if(findUser.verified){
-
-    const passwordMatch = await bcrypt.compare(Password, findUser.Password);
-    
-    if(passwordMatch) {
-        res.status(200).send( ' Logged in successfully!')
-        
-    }else{
-      return next(new ApiError("Wrong email or password 2222222!",404));
-    }
-  }else{
-    return next(new ApiError("please verify your email !!",404));
-  }
-  });
-
-  
-
-
 // need to understand
 
 
@@ -70,6 +18,108 @@ const GetUsers =  asyHchandler(async(req,res,next)=>{
     Promise.resolve(fn(req, res, next)).catch(next);
   };
 
+
+//Allow only to Admin
+
+const GetUsers = asyncHandler(async (req, res, next) => {
+  const userId = req.params.id.trim();
+
+  // Check the role of the user first
+  const user = await DB.findOne({ _id: userId });
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  if (user.role !== 'admin') {
+    return next(new ApiError("Sorry, you do not have access", 403));
+  }
+
+  // Now fetch all users
+  const users = await DB.find({}, { "__v": false, "_id": false });
+  if (users.length === 0) {
+    return next(new ApiError("No users found", 404));
+  }
+
+  res.json(users);
+});
+
+const Delete = asyncHandler(async (req, res, next) => {
+  const userId = req.params.id.trim();
+  const token = req.params.token.trim();
+
+  // Check if token is provided
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized: No token provided" });
+  }
+
+  // Find the admin user by ID
+  const adminUser = await DB.findById(userId);
+
+  // Check if admin user exists
+  if (!adminUser) {
+    return res.status(404).json({ message: "Admin user not found" });
+  }
+
+  // Check if the admin identified by userId is not an admin
+  if (adminUser.role !== 'admin') {
+    return res.status(403).json({ message: "Forbidden: You don't have permission to delete" });
+  }
+
+  // Find the user by token
+  const userToDelete = await DB.findOneAndDelete({ token: token });
+
+  // Check if user to delete exists
+  if (!userToDelete) {
+    return res.status(404).json({ message: "User not found" });
+  } 
+  
+  res.status(200).json({ message: "User deleted successfully" });
+});
+
+
+
+
+
+ 
+const login = async (req, res, next) => {
+  const { Email, Password } = req.body;
+
+  if (!Email || !Password) {
+    return next(new ApiError("Email and password are required!", 404));
+  }
+
+  const findUser = await DB.findOne({ Email });
+
+  if (!findUser) {
+    return next(new ApiError("Wrong email or password!", 404));
+  }
+
+  if (!findUser.verified) {
+    return next(new ApiError("Please verify your email!", 404));
+  }
+
+  const passwordMatch = await bcrypt.compare(Password, findUser.Password);
+
+  if (passwordMatch) {
+    // Assuming token is stored in the user document
+    const token = findUser.token;
+
+    if (!token) {
+      return next(new ApiError("Token not found!", 404));
+    }
+
+    // Send response with token and additional user data
+    return res.status(200).json({
+      message: 'Logged in successfully!',
+      token: token,
+      username: findUser.Name,    // Change this according to your user schema
+      id: findUser._id,
+      role: findUser.role
+    });
+  } else {
+    return next(new ApiError("Wrong email or password!", 404));
+  }
+};
 
   
 const signup = asyncHandler(async (req, res, next) => {
@@ -216,7 +266,7 @@ const update = asyncHandler(async (req, res) => {
 
 
 
-  // get update parameters from request
+ 
   module.exports ={
     GetUsers,
     signup,
@@ -225,7 +275,7 @@ const update = asyncHandler(async (req, res) => {
     ForgetPassword,
     PasswordForm,
     resetPassword,
-    update
-    
-    
+    update,
+    Delete
+        
 }
