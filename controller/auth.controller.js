@@ -135,7 +135,7 @@ const signup = asyncHandler(async (req, res, next) => {
 
   const newUser = new DB({ Name, Email, Password: hashedPassword, confirmPassword, Wight, Lenght });
 
-  const token = jwt.sign({ email: newUser.Email, id: newUser._id }, process.env.JWT_SECRET_KEY);
+  const token = new DB({ Name, Email, Password: hashedPassword, confirmPassword, Wight, Lenght,role: role || 'user' });
   newUser.token = token;
 
   if (await newUser.save()) {
