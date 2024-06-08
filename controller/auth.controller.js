@@ -35,7 +35,7 @@ const GetUsers = asyncHandler(async (req, res, next) => {
   }
 
   // Now fetch all users
-  const users = await DB.find({}, { "__v": false, "_id": false });
+  const users = await DB.find({}, { "__v": false});
   if (users.length === 0) {
     return next(new ApiError("No users found", 404));
   }
