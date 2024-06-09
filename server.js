@@ -8,6 +8,7 @@ const dbConnection = require('./mongoose/database');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 
 
 // Load environment variables
@@ -18,6 +19,7 @@ dbConnection();
 
 // Middlewares
 app.use(cors());
+app.use(bodyParser.json());
 app.use(express.json());
 
 
@@ -32,6 +34,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 const authRouter = require('./routes/auth.route');
 app.use('/api/users', authRouter);
+//Route esp32
+const dataRouter = require('./routes/sensor.route');
+app.use('/api/data',dataRouter)
 
 // 404 handling
 app.all('*', (req, res, next) => {
