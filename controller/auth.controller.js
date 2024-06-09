@@ -31,7 +31,7 @@ const GetUsers = asyncHandler(async (req, res, next) => {
   }
 
   if (user.role !== 'admin') {
-    return next(new ApiError("Sorry, you do not have access", 403));
+    return next(new ApiError("Sorry, you do not have access", 404));
   }
 
   // Now fetch all users
