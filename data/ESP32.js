@@ -1,0 +1,22 @@
+const mongoose = require('mongoose');
+const authschema = new mongoose.Schema({
+    timestamp: { 
+        type: Date, 
+        default: Date.now 
+      }, // Automatically sets the current date and time when a new document is created
+    GPS: {
+        Location: String, 
+      },
+      DHT11: {
+        temperature: Number,
+        humidity: Number,
+      },
+      MAX30105: {
+    Heartrate : Number,
+    Spo2 : Number,
+    Bloodpressure:Number,
+      },
+    
+
+});
+module.exports = mongoose.model('SensorData',authschema);
