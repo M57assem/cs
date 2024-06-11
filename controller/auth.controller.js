@@ -185,7 +185,7 @@ const findUser = await DB.findOne({ Email });
 if (!findUser) {
   return next(new ApiError("Sorry Your Email is wrong", 404));
 }
-const token = jwt.sign({ email: findUser.Email, id: findUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '10m' });
+const token = jwt.sign({ email: findUser.Email, id: findUser._id }, process.env.JWT_SECRET_KEY );
 
 const link =   `https://barclete88.onrender.com/api/users/PasswordForm/${token}`
 const result = await resetEmail(findUser, link);
@@ -227,7 +227,7 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   console.log("Apply Hashpassword");
   const updatedUser = await DB.findOneAndUpdate(
       { _id: decodedToken.id },
-      { Password : hashedPassword , confirmPassword : confirmPassword },
+      { Password : hashedPassword  },
       { new: true }
   );
   res.json("Update Success");
