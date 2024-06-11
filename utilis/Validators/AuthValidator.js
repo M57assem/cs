@@ -23,13 +23,7 @@ exports.SignupValidator = [
     .notEmpty().withMessage('Password is required')
     .isLength({min:6}).withMessage('Password is too short')
     .isLength({max:20}).withMessage('Password is too long '),
-    // .custom((password, { req }) => {
-    //   if (password !== req.body.confirmPassword) {
-    //     throw new Error('Password Confirmation incorrect');
-    //   }
-    //   return true;
-    // }),
-       
+   
       
     
     
@@ -38,6 +32,9 @@ exports.SignupValidator = [
 
     check('confirmPassword')
     .notEmpty().withMessage('ConfirmPassword is required'),
+    .custom((value, { req }) => {
+      if (value !== req.body.Password) {
+        throw new Error('Password confirmation does not match password');
 
 
 
