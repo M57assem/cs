@@ -21,12 +21,7 @@ Password:{
     required:true
     
 },
-confirmPassword:{
-    type: String,
-    required:true
     
-
-},
 Wight :{
     type: String,
     required:true,
