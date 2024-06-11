@@ -1,7 +1,7 @@
 const {check} = require('express-validator');
-
 const ErrorValidation = require('../../middleware/ErrorValidation');
 const ApiError = require('../utilis/handler');
+
 exports.SignupValidator = [
     check('Name')
     .notEmpty().withMessage('Name is required')
@@ -35,8 +35,11 @@ exports.SignupValidator = [
     check('confirmPassword')
     .notEmpty().withMessage('ConfirmPassword is required'),
     .custom((value, { req }) => {
-      if (value !== req.body.Password) {
+       if (value !== req.body.Password) {
         throw new Error('Password confirmation does not match password');
+      }
+      return true; // Validation passed
+    }),
 
 
 
