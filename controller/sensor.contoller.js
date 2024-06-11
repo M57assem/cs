@@ -8,23 +8,38 @@ const asyncHandler = fn => (req, res, next) => {
   
 
 
-// to get data from esp32
 
+// to get data from ESP32
 const GetData = asyncHandler(async (req, res, next) => {
-    
- const data = new DB(req.body);
- const sensordata = await data.save()
+  const { GPS, DHT11, MAX30105 } = req.body;
 
-     if(!sensordata){
+  // Example criteria for finding existing data: GPS location
+  const data = await DB.findOne({ 'GPS.Location': GPS.Location });
 
-        return next(new ApiError(" Something went wrong ", 404));
-     }else{
+  if (data) {
+    // Update existing document
+    data.DHT11 = DHT11;
+    data.MAX30105 = MAX30105;
+    data.timestamp = Date.now(); // Update timestamp
 
-        res.status(201).json({ message: "Data saved successfully" });
+    const updatedData = await data.save();
+    if (updatedData) {
+      res.status(200).json({ message: "Data updated successfully" });
+    } else {
+      return next(new ApiError("Something went wrong while updating", 500));
+    }
+  } else {
+    // Create new document
+    const newData = new DB(req.body);
+    const savedData = await newData.save();
 
-     }
-
-  });
+    if (savedData) {
+      res.status(201).json({ message: "Data saved successfully" });
+    } else {
+      return next(new ApiError("Something went wrong while saving", 500));
+    }
+  }
+});
 
 
 
