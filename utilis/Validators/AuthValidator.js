@@ -1,6 +1,6 @@
 const { check } = require('express-validator');
 const ErrorValidation = require('../../middleware/ErrorValidation');
-const ApiError = require('../utilis/handler');
+
 
 exports.SignupValidator = [
   check('Name')
