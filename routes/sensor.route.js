@@ -4,8 +4,10 @@ const router = express.Router();
 const as = require('../controller/sensor.contoller');
 
 
-router.route('/')
-.post(as.GetData)
+router.route('/:token')
+    .post(as.saveSensorData)
+    .get( as.getSensorDataForUser);
+
 
 
 
