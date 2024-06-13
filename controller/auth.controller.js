@@ -100,14 +100,19 @@ const login = async (req, res, next) => {
 
   const passwordMatch = await bcrypt.compare(Password, findUser.Password);
 
-  if (passwordMatch) {
-    // Assuming token is stored in the user document
-    const token = findUser.token;
+   if (passwordMatch) {
+    // Generate a new token
+     
+      const token = jwt.sign(
+        { email: findUser.Email, id: findUser._id },
+        process.env.JWT_SECRET_KEY
+      );
 
-    if (!token) {
-      return next(new ApiError("Token not found!", 404));
-    }
-
+      // Update user's token in the database
+     
+      findUser.token = token;
+      await findUser.save();
+  
     // Send response with token and additional user data
     return res.status(200).json({
       message: 'Logged in successfully!',
