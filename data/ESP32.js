@@ -19,7 +19,8 @@ const authschema = new mongoose.Schema({
       MAX30105: {
     Heartrate : Number,
     Spo2 : Number,
-    Bloodpressure:Number,
+  IR : Number,
+    Red : Number,
       },
     
 
