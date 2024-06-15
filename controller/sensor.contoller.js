@@ -13,43 +13,44 @@ const asyncHandler = fn => (req, res, next) => {
 // Save data from ESP32
 
 const saveSensorData = asyncHandler(async (req, res, next) => {
-    const token = req.params.token;
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    const { email, id } = decoded;
 
-    if (!email || !id) {
-        return next(new ApiError('Invalid token', 400));
-    }
 
-    const data = await DB.findOne({ 'GPS.Location': req.body.GPS.Location, userId: id });
+    const userId = req.userId;
+
+    const data = await DB.findOne({ 'GPS.Location': req.body.GPS.Location });
 
     if (data) {
+        // If data exists, update it
         data.DHT11 = req.body.DHT11;
         data.MAX30105 = req.body.MAX30105;
         data.timestamp = Date.now(); // Update timestamp
 
         const updatedData = await data.save();
         if (updatedData) {
-            res.status(200).json({ message: 'Data updated successfully' });
+            res.status(200).json(updatedData);
         } else {
             return next(new ApiError('Something went wrong while updating', 500));
         }
     } else {
+        // If data doesn't exist, create a new entry
         const newData = new DB({
             GPS: req.body.GPS,
             DHT11: req.body.DHT11,
             MAX30105: req.body.MAX30105,
-            userId: id
+            userId: userId
         });
         const savedData = await newData.save();
 
         if (savedData) {
-            res.status(201).json({ message: 'Data saved successfully' });
+            res.status(201).json({message:"ok"});
         } else {
             return next(new ApiError('Something went wrong while saving', 500));
         }
     }
 });
+
+
+
 
 
 
