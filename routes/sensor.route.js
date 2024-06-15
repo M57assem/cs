@@ -4,12 +4,12 @@ const authenticateUser = require('../middleware/authinticate'); // Import authen
 const as = require('../controller/sensor.contoller');
 
 // Register authenticateUser middleware for all routes in this router
+router.route('/:id') // Route accepts user ID directly
+    .get(as.getSensorDataForUser);
+
 router.use(authenticateUser);
 
 router.route('/')
     .post(as.saveSensorData);
-
-router.route('/:token')
-    .get(as.getSensorDataForUser);
 
 module.exports = router;
