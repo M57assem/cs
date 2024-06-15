@@ -8,8 +8,9 @@ const asyncHandler = fn => (req, res, next) => {
 
 const saveSensorData = asyncHandler(async (req, res, next) => {
     const userId = req.userId;
-    
-    const data = await DB.findOne({ 'GPS.Location': req.body.GPS.Location });
+
+    // Find data by both GPS Location and userId
+    const data = await DB.findOne({ 'GPS.Location': req.body.GPS.Location, userId: userId });
 
     if (data) {
         // If data exists, update it
@@ -29,12 +30,12 @@ const saveSensorData = asyncHandler(async (req, res, next) => {
             GPS: req.body.GPS,
             DHT11: req.body.DHT11,
             MAX30105: req.body.MAX30105,
-            userId: userId
+            userId: userId,
+            timestamp: Date.now() // Add timestamp for consistency
         });
         const savedData = await newData.save();
 
         if (savedData) {
-            
             res.status(201).json({ message: "Data is saved" });
         } else {
             return next(new ApiError('Something went wrong while saving', 500));
