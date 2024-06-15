@@ -1,22 +1,14 @@
 const DB = require('../data/ESP32');
 const ApiError = require('../utilis/handler');
-const jwt = require('jsonwebtoken');
 
 
 const asyncHandler = fn => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
-  };
-  
-
-
-
-// Save data from ESP32
+};
 
 const saveSensorData = asyncHandler(async (req, res, next) => {
-
-
     const userId = req.userId;
-
+    
     const data = await DB.findOne({ 'GPS.Location': req.body.GPS.Location });
 
     if (data) {
@@ -42,36 +34,31 @@ const saveSensorData = asyncHandler(async (req, res, next) => {
         const savedData = await newData.save();
 
         if (savedData) {
-            res.status(201).json({message:"ok"});
+            
+            res.status(201).json({ message: "Data is saved" });
         } else {
             return next(new ApiError('Something went wrong while saving', 500));
         }
     }
 });
 
-
-
-
-
-
 const getSensorDataForUser = asyncHandler(async (req, res, next) => {
-    const token = req.params.token;
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    const userId = decoded.id;
+    const userId = req.params.id;
 
-    const data = await DB.find({ userId });
 
-    if (data) {
+    const data = await DB.find({ userId: userId });
+    
 
+    if (data && data.length > 0) {
         res.json(data);
     } else {
-        
-        return next(new ApiError('Data not found', 404));
+        return next(new ApiError('Data not found for this user', 404));
     }
 });
+
+
 
 module.exports = {
     saveSensorData,
     getSensorDataForUser,
 };
-
