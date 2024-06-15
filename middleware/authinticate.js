@@ -1,7 +1,12 @@
 const jwt = require('jsonwebtoken');
-
 const authenticateUser = (req, res, next) => {
-    const token = req.headers.authorization || req.body.token;
+    
+    let token = req.headers.authorization || req.body.token;
+
+    // Remove "Bearer " prefix if present
+    if (token && token.startsWith('Bearer ')) {
+        token = token.slice(7); // Remove "Bearer " from token
+    }
 
     if (!token) {
         console.error('Token not provided');
@@ -19,5 +24,8 @@ const authenticateUser = (req, res, next) => {
         }
     });
 };
+
+
+
 
 module.exports = authenticateUser;
