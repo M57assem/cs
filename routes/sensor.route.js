@@ -10,6 +10,6 @@ router.route('/')
   .post(as.saveSensorData);
 
 // Call repeatAPI every 2 minutes
-setInterval(repeatAPI, 1 * 60 * 1000);
+setInterval(repeatAPI, 5 * 60 * 1000);
 
 module.exports = router;
