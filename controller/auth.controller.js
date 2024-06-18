@@ -129,6 +129,7 @@ const login = async (req, res, next) => {
   
 const signup = asyncHandler(async (req, res, next) => {
   const { Name, Email, Password, confirmPassword, Wight, Lenght , role } = req.body;
+  const photo = req.file ? req.file.filename : '';
 
   const findUser = await DB.findOne({ Email });
 
@@ -138,7 +139,7 @@ const signup = asyncHandler(async (req, res, next) => {
 
   const hashedPassword = await bcrypt.hash(Password, 10);
 
-  const newUser = new DB({ Name, Email, Password: hashedPassword, Wight, Lenght,role: role || 'user' });
+  const newUser = new DB({ Name, Email, Password: hashedPassword, Wight, Lenght,role: role || 'user', photo });
 
   const token = jwt.sign({ email: newUser.Email, id: newUser._id }, process.env.JWT_SECRET_KEY,);
   newUser.token = token;
@@ -159,6 +160,38 @@ const signup = asyncHandler(async (req, res, next) => {
     return next(new ApiError("Something went wrong", 500));
   }
 });
+
+
+
+
+const uploadPhoto = asyncHandler(async (req, res, next) => {
+  const userId = req.params.id;
+
+  // Check if file is uploaded
+  if (!req.file) {
+      return next(new ApiError("No file uploaded", 400));
+  }
+
+  const photo = req.file.filename;
+
+  // Find user and update the photo field
+  const updatedUser = await DB.findByIdAndUpdate(
+      userId,
+      { photo: photo },
+      { new: true }
+  );
+
+  if (!updatedUser) {
+      return next(new ApiError("User not found", 404));
+  }
+
+  res.status(200).json({
+      message: 'Photo uploaded successfully!',
+      photo: updatedUser.photo
+  });
+});
+
+
 
 const path = require('path')
 const VerifyEmail = async (req, res, next) => {
@@ -281,6 +314,7 @@ const update = asyncHandler(async (req, res) => {
     PasswordForm,
     resetPassword,
     update,
-    Delete
+    Delete,
+    uploadPhoto
         
 }
