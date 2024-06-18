@@ -34,10 +34,7 @@ token:{
 verified: {
     type: Boolean,
     default: false
-}, 
-
-photo: String,
- // Assuming you'll store filename
+},
 verified: {
   type: Boolean,
   default: false
