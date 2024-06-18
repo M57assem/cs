@@ -38,7 +38,9 @@ token:{
 verified: {
     type: Boolean,
     default: false
-}, role: {
+},photo: String,
+    
+   role: {
     type: String,
     enum: ['user', 'admin'],
     default: 'user'
