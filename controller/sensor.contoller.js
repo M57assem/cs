@@ -58,9 +58,25 @@ const getSensorDataForUser = asyncHandler(async (req, res, next) => {
     }
 });
 
+const axios = require('axios');
+
+const repeatAPI = async () => {
+  try {
+    const response = await axios.get('https://barclete88.onrender.com/api/data');
+    const data = response.data;
+    console.log({message:'data updated'});
+    // Do something with the data
+  } catch (error) {
+    console.error(error);
+    // Handle error
+  }
+};
+
+
 
 
 module.exports = {
     saveSensorData,
     getSensorDataForUser,
+    repeatAPI
 };
