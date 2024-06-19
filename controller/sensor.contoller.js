@@ -8,8 +8,12 @@ const asyncHandler = fn => (req, res, next) => {
 
 // to get data from ESP32
 const saveSensorData = asyncHandler(async (req, res, next) => {
-    const { GPS, DHT11, MAX30105 } = req.body;
-  
+  const { GPS, DHT11, MAX30105 } = req.body;
+
+if (!GPS || !GPS.Location) {
+  return next(new ApiError("GPS location not provided in request", 400));
+}
+
     // Example criteria for finding existing data: GPS location
     const data = await DB.findOne({ 'GPS.Location': GPS.Location });
   
