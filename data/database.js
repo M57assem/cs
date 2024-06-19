@@ -31,10 +31,8 @@ token:{
     type: String,  
 },
 
-verified: {
-    type: Boolean,
-    default: false
-},
+photo: String,
+    
 verified: {
   type: Boolean,
   default: false
