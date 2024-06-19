@@ -36,7 +36,9 @@ verified: {
     default: false
 }, 
 
-photo: String,
+photo:{
+   -type: String,  
+},
  // Assuming you'll store filename
 
 role: {
