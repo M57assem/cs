@@ -7,43 +7,52 @@ const asyncHandler = fn => (req, res, next) => {
 };
 
 // to get data from ESP32
-const saveSensorData = asyncHandler(async (req, res, next) => {
-  const { GPS, DHT11, MAX30105 } = req.body;
+const saveSensorData = async (req, res, next) => {
+    const { DHT11, MAX30105 } = req.body;
 
-if (!GPS || !GPS.Location) {
-  return next(new ApiError("GPS location not provided in request", 400));
-}
+    try {
+        // Check if there's any existing data (assuming a single document approach)
+        const sensorData = await DB.findOne();
 
-    // Example criteria for finding existing data: GPS location
-    const data = await DB.findOne({ 'GPS.Location': GPS.Location });
-  
-    if (data) {
-      // Update existing document
-      data.DHT11 = DHT11;
-      data.MAX30105 = MAX30105;
-      data.timestamp = Date.now(); // Update timestamp
-  
-      const updatedData = await data.save();
-      if (updatedData) {
-        res.status(200).json({ message: "Data updated successfully" });
-      } else {
-        return next(new ApiError("Something went wrong while updating", 500));
-      }
-    } else {
-      // Create new document
-      const newData = new DB(req.body);
-      const savedData = await newData.save();
-  
-      if (savedData) {
-        res.status(201).json({ message: "Data saved successfully" });
-      } else {
-        return next(new ApiError("Something went wrong while saving", 500));
-      }
+        if (sensorData) {
+            // Update existing document
+            if (DHT11) {
+                sensorData.DHT11 = DHT11;
+            }
+            if (MAX30105) {
+                sensorData.MAX30105 = MAX30105;
+            }
+            sensorData.timestamp = Date.now(); // Update timestamp
+
+            const updatedData = await sensorData.save();
+            if (updatedData) {
+                res.status(200).json({ message: "Data updated successfully" });
+            } else {
+                throw new Error("Failed to update data");
+            }
+        } else {
+            // Create new document
+            sensorData = new DB({
+                DHT11,
+                MAX30105,
+            });
+
+            const savedData = await DB.save();
+            if (savedData) {
+                res.status(201).json({ message: "Data saved successfully" });
+            } else {
+                throw new Error("Failed to save data");
+            }
+        }
+    } catch (err) {
+        next(err); // Pass error to Express error handling middleware
     }
-  });
+
+
   
   
-  
+
+
   
 
    
