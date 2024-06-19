@@ -271,38 +271,43 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   res.json("Update Success");
 });
 
-const update = asyncHandler(async (req, res) => {
-  
-    // Verify JWT token
-    const decodedToken = jwt.verify(req.params.token, process.env.JWT_SECRET_KEY);
-
-    // Find user by ID
-    const user = await DB.findOne({ _id: decodedToken.id });
-
-    // Check if user exists
-    if (!user) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-
-    // Update user
+ const update = asyncHandler(async (req, res, next) => {
     
-    const updatedUser = await DB.findOneAndUpdate(
-      { _id: decodedToken.id },
-      req.body, // Assuming req.body contains the updated user information
-      { new: true } // Return the updated user document
-    );
-
-    if(updatedUser){
-    // Send response
-     res.json("Update Success");
-    }else{
-    // Handle errors
+      // Get user ID from request parameters
+      const userId = req.params.id;
   
-    return new ApiError("Update failed", 404);
-    }
-});
-
-
+      // Check if user ID is provided
+      if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+      }
+  
+      // Find user by ID
+      const user = await DB.findOne({ _id: userId });
+  
+      // Check if user exists
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // Update user
+      const updatedUser = await DB.findOneAndUpdate(
+        { _id: userId },
+        req.body, // Assuming req.body contains the updated user information
+        { new: true } // Return the updated user rrordocument
+      );
+  
+      // Check if the update was successful
+      if (updatedUser) {
+        // Send response
+        res.json({ message: 'Update Success' });
+      } else {
+        // Handle errors
+        return next(new ApiError('Error',404));
+      }
+  
+    
+  });
+  
 
  
   module.exports ={
