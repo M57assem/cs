@@ -55,7 +55,7 @@ router.route('/PasswordForm/:token')
 router.route('/forget/:token')
 .post(resetPassword,as.resetPassword)
 
-router.route('/update/:token')
+router.route('/update/:id')
 .patch(as.update)
 
 router.route('/:id/delete/:token')
