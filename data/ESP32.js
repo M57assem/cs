@@ -5,7 +5,8 @@ const authschema = new mongoose.Schema({
         default: Date.now 
       }, // Automatically sets the current date and time when a new document is created
     GPS: {
-        Location: String, 
+         type: String,
+            default: '29.982704, 31.282639' // Default GPS coordinates
       },
       DHT11: {
         temperature: Number,
