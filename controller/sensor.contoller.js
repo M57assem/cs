@@ -7,55 +7,45 @@ const asyncHandler = fn => (req, res, next) => {
 };
 
 // to get data from ESP32
-const saveSensorData = async (req, res, next) => {
-    const { DHT11, MAX30105 } = req.body;
 
-    try {
-        // Check if there's any existing data (assuming a single document approach)
-        const sensorData = await DB.findOne();
-
-        if (sensorData) {
-            // Update existing document
-            if (DHT11) {
-                sensorData.DHT11 = DHT11;
-            }
-            if (MAX30105) {
-                sensorData.MAX30105 = MAX30105;
-            }
-            sensorData.timestamp = Date.now(); // Update timestamp
-
-            const updatedData = await sensorData.save();
-            if (updatedData) {
-                res.status(200).json({ message: "Data updated successfully" });
-            } else {
-                throw new Error("Failed to update data");
-            }
-        } else {
-            // Create new document
-            sensorData = new DB({
-                DHT11,
-                MAX30105,
-            });
-
-            const savedData = await DB.save();
-            if (savedData) {
-                res.status(201).json({ message: "Data saved successfully" });
-            } else {
-                throw new Error("Failed to save data");
-            }
-        }
-    } catch (err) {
-        next(err); // Pass error to Express error handling middleware
-    }
-
-
+    const saveSensorData = async (req, res, next) => {
+      const { DHT11, MAX30105 } = req.body;
   
+      // Check if there's any existing data (assuming a single document approach)
+      let sensorData = await DB.findOne();
   
-
-
+      if (sensorData) {
+          // Update existing document
+          if (DHT11) {
+              sensorData.DHT11 = DHT11;
+          }
+          if (MAX30105) {
+              sensorData.MAX30105 = MAX30105;
+          }
+          sensorData.timestamp = Date.now(); // Update timestamp
   
-
-
+          const updatedData = await sensorData.save();
+          if (updatedData) {
+              res.status(200).json({ message: "Data updated successfully" });
+          } else {
+              return nextnew(ApiError("Failed to update data",404));
+          }
+      } else {
+          // Create new document
+          sensorData = new DB({
+              DHT11,
+              MAX30105,
+          });
+  
+          const savedData = await sensorData.save();
+          if (savedData) {
+              res.status(201).json({ message: "Data saved successfully" });
+          } else {
+              // Pass an error to Express error handling middleware
+              return nextnew(ApiError("Failed to save data",404));
+          }
+      }
+  };
    
 
 const getSensorDataForUser = asyncHandler(async (req, res, next) => {
