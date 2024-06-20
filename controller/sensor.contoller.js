@@ -11,53 +11,49 @@ const asyncHandler = fn => (req, res, next) => {
  
   
 
-const saveSensorData = async (req, res, next) => {
-    const { temperatureC, humidity, heartRate, spo2 } = req.body; // Extract data from request body
-
-     const temperatureF = (temperatureC * 9/5) + 32;
-
-        const formattedTemperature = temperatureC.toFixed(2);
+  const saveSensorData = async (req, res, next) => {
+        const { temperatureC, Humidity, HeartRate, Spo2 } = req.body;
     
-
-    // Check if there's any existing data (assuming a single document approach)
-    let sensorData = await DB.findOne();
-
-    if (sensorData) {
-        // Update existing document
-        DB.Temperature = formattedTemperature;
-        DB.Humidity = humidity;
-        DB.HeartRate = heartRate;
-        DB.Spo2 = spo2;
-
-        DB.timestamp = Date.now(); // Update timestamp
-
         try {
-            const updatedData = await sensorData.save();
-            res.status(200).json({ message: "Data updated successfully", data: updatedData });
-        } catch (err) {
-            console.error("Failed to update data:", err);
-            return next(err);
+            let sensorData = await DB.findOne();
+    
+            if (sensorData) {
+                // Update existing document
+                sensorData.temperatureC = temperatureC;
+                sensorData.Humidity = Humidity;
+                sensorData.HeartRate = HeartRate;
+                sensorData.Spo2 = Spo2;
+    
+                sensorData.timestamp = Date.now(); // Update timestamp
+    
+                const updatedData = await sensorData.save();
+                if (updatedData) {
+                    res.status(200).json({ message: "Data updated successfully" });
+                } else {
+                    return next(new ApiError("Failed to update data", 500));
+                }
+            } else {
+                // Create new document
+                sensorData = new DB({
+                    temperatureC,
+                    Humidity,
+                    HeartRate,
+                    Spo2
+                });
+    
+                const savedData = await sensorData.save();
+                if (savedData) {
+                    res.status(201).json({ message: "Data saved successfully" });
+                } else {
+                    return next(new ApiError("Failed to save data", 500));
+                }
+            }
+        } catch (error) {
+            console.error("Error saving sensor data:", error);
+            return next(new ApiError("Failed to save or update data", 500));
         }
-    } else {
-        // Create new document
-        sensorData = new DB({
-            Temperature: temperatureC,
-            Humidity: humidity,
-            HeartRate: heartRate,
-            Spo2: spo2
-        });
-
-        try {
-            const savedData = await sensorData.save();
-            res.status(201).json({ message: "Data saved successfully", data: savedData });
-        } catch (err) {
-            console.error("Failed to save data:", err);
-            return next(err);
-        }
-    }
-};
-
-
+    };
+    
  
    
 
