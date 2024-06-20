@@ -10,7 +10,6 @@ const asyncHandler = fn => (req, res, next) => {
 
  
   
-const SensorData = require('../models/SensorData'); // Assuming your Mongoose model is defined in 'models/SensorData.js'
 
 const saveSensorData = async (req, res, next) => {
     const { temperatureC, humidity, heartRate, spo2 } = req.body; // Extract data from request body
