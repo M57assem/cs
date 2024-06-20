@@ -15,19 +15,19 @@ const saveSensorData = async (req, res, next) => {
     const { temperatureC, humidity, heartRate, spo2 } = req.body; // Extract data from request body
 
     // Check if there's any existing data (assuming a single document approach)
-    let sensorData = await SensorData.findOne();
+    let sensorData = await DB.findOne();
 
     if (sensorData) {
         // Update existing document
-        sensorData.Temperature = temperatureC;
-        sensorData.Humidity = humidity;
-        sensorData.HeartRate = heartRate;
-        sensorData.Spo2 = spo2;
+        DB.Temperature = temperatureC;
+        DB.Humidity = humidity;
+        DB.HeartRate = heartRate;
+        DB.Spo2 = spo2;
 
-        sensorData.timestamp = Date.now(); // Update timestamp
+        DB.timestamp = Date.now(); // Update timestamp
 
         try {
-            const updatedData = await sensorData.save();
+            const updatedData = await DB.save();
             res.status(200).json({ message: "Data updated successfully", data: updatedData });
         } catch (err) {
             console.error("Failed to update data:", err);
@@ -35,7 +35,7 @@ const saveSensorData = async (req, res, next) => {
         }
     } else {
         // Create new document
-        sensorData = new SensorData({
+        sensorData = new DB({
             Temperature: temperatureC,
             Humidity: humidity,
             HeartRate: heartRate,
@@ -43,7 +43,7 @@ const saveSensorData = async (req, res, next) => {
         });
 
         try {
-            const savedData = await sensorData.save();
+            const savedData = await DB.save();
             res.status(201).json({ message: "Data saved successfully", data: savedData });
         } catch (err) {
             console.error("Failed to save data:", err);
@@ -52,9 +52,6 @@ const saveSensorData = async (req, res, next) => {
     }
 };
 
-module.exports = {
-    saveSensorData
-};
 
  
    
@@ -89,9 +86,11 @@ const repeatAPI = async () => {
 
 
 
-
 module.exports = {
     saveSensorData,
     getSensorDataForUser,
     repeatAPI
 };
+
+
+
