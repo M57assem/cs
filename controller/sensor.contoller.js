@@ -7,16 +7,20 @@ const asyncHandler = fn => (req, res, next) => {
 };
 
 // to get data from ESP32
-const saveSensorData = async (req, res, next) => {
-      const { DHT11, MAX30105 } = req.body;
+
+    const saveSensorData = async (req, res, next) => {
+     const { Temperature, Humidity, HeartRate, Spo2 } = req.body;
   
       // Check if there's any existing data (assuming a single document approach)
       let sensorData = await DB.findOne();
   
       if (sensorData) {
           // Update existing document
-          sensorData.DHT11 = DHT11;
-          sensorData.MAX30105 = MAX30105;
+          sensorData.Temperature = Temperature;
+          sensorData.Humidity = Humidity;
+          sensorData.HeartRate = HeartRate;
+          sensorData.Spo2 = Spo2;
+
           sensorData.timestamp = Date.now(); // Update timestamp            
   
           const updatedData = await sensorData.save();
@@ -28,8 +32,10 @@ const saveSensorData = async (req, res, next) => {
       } else {
           // Create new document
           sensorData = new DB({
-              DHT11,
-              MAX30105,
+            Temperature,
+            Humidity,
+            HeartRate,
+            Spo2
           });
   
           const savedData = await sensorData.save();
@@ -42,6 +48,10 @@ const saveSensorData = async (req, res, next) => {
       }
   };
   
+  
+ 
+  
+
  
    
 
