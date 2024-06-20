@@ -18,7 +18,7 @@ const authschema = new mongoose.Schema({
       },
       
     
-      Temperature:{
+      temperatureC:{
           
         type: Number,
 
