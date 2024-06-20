@@ -14,12 +14,17 @@ const asyncHandler = fn => (req, res, next) => {
 const saveSensorData = async (req, res, next) => {
     const { temperatureC, humidity, heartRate, spo2 } = req.body; // Extract data from request body
 
+     const temperatureF = (temperatureC * 9/5) + 32;
+
+        const formattedTemperature = temperatureC.toFixed(2);
+    
+
     // Check if there's any existing data (assuming a single document approach)
     let sensorData = await DB.findOne();
 
     if (sensorData) {
         // Update existing document
-        DB.Temperature = temperatureC;
+        DB.Temperature = formattedTemperature;
         DB.Humidity = humidity;
         DB.HeartRate = heartRate;
         DB.Spo2 = spo2;
