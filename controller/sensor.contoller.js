@@ -43,7 +43,7 @@ const saveSensorData = async (req, res, next) => {
         });
 
         try {
-            const savedData = await DB.save();
+            const savedData = await sensorData.save();
             res.status(201).json({ message: "Data saved successfully", data: savedData });
         } catch (err) {
             console.error("Failed to save data:", err);
