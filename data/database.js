@@ -7,12 +7,15 @@ Name:{
     required:true
 
 },
-Email:{
+ Email: {
     type: String,
-    required:true,
-    unique:true,
-    validate: [validator.isEmail,'Sorry Email Not Valid']
-},
+    required: true,
+    unique: true,
+    trim: true, // Trim whitespace from input
+    lowercase: true, // Store emails in lowercase to ensure case insensitivity
+    validate: [validator.isEmail, 'Invalid email format']
+  }
+,
 Password:{
     type: String,
     required:true
