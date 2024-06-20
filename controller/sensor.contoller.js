@@ -8,49 +8,54 @@ const asyncHandler = fn => (req, res, next) => {
 
 // to get data from ESP32
 
-    const saveSensorData = async (req, res, next) => {
-     const { Temperature, Humidity, HeartRate, Spo2 } = req.body;
-  
-      // Check if there's any existing data (assuming a single document approach)
-      let sensorData = await DB.findOne();
-  
-      if (sensorData) {
-          // Update existing document
-          sensorData.Temperature = Temperature;
-          sensorData.Humidity = Humidity;
-          sensorData.HeartRate = HeartRate;
-          sensorData.Spo2 = Spo2;
-
-          sensorData.timestamp = Date.now(); // Update timestamp            
-  
-          const updatedData = await sensorData.save();
-          if (updatedData) {
-              res.status(200).json({ message: "Data updated successfully" });
-          } else {
-              return next(new ApiError("Failed to update data",404));
-          }
-      } else {
-          // Create new document
-          sensorData = new DB({
-            Temperature,
-            Humidity,
-            HeartRate,
-            Spo2
-          });
-  
-          const savedData = await sensorData.save();
-          if (savedData) {
-              res.status(201).json({ message: "Data saved successfully" });
-          } else {
-              // Pass an error to Express error handling middleware
-              return next(new ApiError("Failed to save data",404));
-          }
-      }
-  };
-  
-  
  
   
+const SensorData = require('../models/SensorData'); // Assuming your Mongoose model is defined in 'models/SensorData.js'
+
+const saveSensorData = async (req, res, next) => {
+    const { temperatureC, humidity, heartRate, spo2 } = req.body; // Extract data from request body
+
+    // Check if there's any existing data (assuming a single document approach)
+    let sensorData = await SensorData.findOne();
+
+    if (sensorData) {
+        // Update existing document
+        sensorData.Temperature = temperatureC;
+        sensorData.Humidity = humidity;
+        sensorData.HeartRate = heartRate;
+        sensorData.Spo2 = spo2;
+
+        sensorData.timestamp = Date.now(); // Update timestamp
+
+        try {
+            const updatedData = await sensorData.save();
+            res.status(200).json({ message: "Data updated successfully", data: updatedData });
+        } catch (err) {
+            console.error("Failed to update data:", err);
+            return next(err);
+        }
+    } else {
+        // Create new document
+        sensorData = new SensorData({
+            Temperature: temperatureC,
+            Humidity: humidity,
+            HeartRate: heartRate,
+            Spo2: spo2
+        });
+
+        try {
+            const savedData = await sensorData.save();
+            res.status(201).json({ message: "Data saved successfully", data: savedData });
+        } catch (err) {
+            console.error("Failed to save data:", err);
+            return next(err);
+        }
+    }
+};
+
+module.exports = {
+    saveSensorData
+};
 
  
    
