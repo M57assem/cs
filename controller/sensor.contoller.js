@@ -8,18 +8,15 @@ const asyncHandler = fn => (req, res, next) => {
 
 // to get data from ESP32
 
- 
-  
-
-  const saveSensorData = async (req, res, next) => {
-        const { temperature, Humidity, HeartRate, Spo2 } = req.body;
+    const saveSensorData = async (req, res, next) => {
+        const { temperatureC, Humidity, HeartRate, Spo2 } = req.body;
     
-        try {
+        
             let sensorData = await DB.findOne();
     
             if (sensorData) {
                 // Update existing document
-                sensorData.temperature = temperature;
+                sensorData.temperatureC = temperatureC;
                 sensorData.Humidity = Humidity;
                 sensorData.HeartRate = HeartRate;
                 sensorData.Spo2 = Spo2;
@@ -35,7 +32,7 @@ const asyncHandler = fn => (req, res, next) => {
             } else {
                 // Create new document
                 sensorData = new DB({
-                    temperature,
+                    temperatureC,
                     Humidity,
                     HeartRate,
                     Spo2
@@ -48,11 +45,11 @@ const asyncHandler = fn => (req, res, next) => {
                     return next(new ApiError("Failed to save data", 500));
                 }
             }
-        } catch (error) {
-            console.error("Error saving sensor data:", error);
-            return next(new ApiError("Failed to save or update data", 500));
-        }
+       
     };
+    
+
+ 
     
  
    
