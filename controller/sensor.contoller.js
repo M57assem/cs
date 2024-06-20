@@ -27,7 +27,7 @@ const saveSensorData = async (req, res, next) => {
         DB.timestamp = Date.now(); // Update timestamp
 
         try {
-            const updatedData = await DB.save();
+            const updatedData = await sensorData.save();
             res.status(200).json({ message: "Data updated successfully", data: updatedData });
         } catch (err) {
             console.error("Failed to update data:", err);
