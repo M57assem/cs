@@ -9,8 +9,7 @@ const asyncHandler = fn => (req, res, next) => {
 const saveSensorData = async (req, res, next) => {
     let { temperatureC, Humidity, HeartRate, Spo2 } = req.body;
 
-    // Ensure temperatureC is formatted as xx.00 and parsed back to a number
-    temperatureC = parseFloat(temperatureC).toFixed(2);
+ 
     let sensorData = await DB.findOne();
 
     if (sensorData) {
@@ -48,12 +47,7 @@ const saveSensorData = async (req, res, next) => {
 
 const getSensorDataForUser = asyncHandler(async (req, res, next) => {
     const data = await DB.find().sort({ timestamp: -1 }).limit(10);
-   if (data && data.length > 0) {
-        // Ensure temperatureC is a string formatted as xx.00
-        data.forEach(item => {
-            item.temperatureC = parseFloat(item.temperatureC).toFixed(2);
-        });
-       
+  
 
         res.json(data);
     } else {
