@@ -47,7 +47,7 @@ const saveSensorData = async (req, res, next) => {
 
 const getSensorDataForUser = asyncHandler(async (req, res, next) => {
     const data = await DB.find().sort({ timestamp: -1 }).limit(10);
-  
+  if(data){
 
         res.json(data);
     } else {
