@@ -20,7 +20,7 @@ const authschema = new mongoose.Schema({
     
       temperatureC:{
           
-        type: String,
+        type: Number,
 
       },
       Humidity:{
